@@ -1,11 +1,13 @@
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import coffeeStoreData from "../../data/coffee-stores.json";
+import styles from "../../styles/coffee-store.module.css";
+import cls from "classnames";
 
 export function getStaticProps(staticProps) {
   const params = staticProps.params;
-  console.log("params", params);
   return {
     props: {
       coffeeStore: coffeeStoreData.find((coffeeStore) => {
@@ -28,6 +30,10 @@ export function getStaticPaths() {
   };
 }
 
+const handleUpvoteButton = () => {
+  console.log("upvoted");
+};
+
 const CoffeeStore = (props) => {
   const router = useRouter();
 
@@ -35,20 +41,65 @@ const CoffeeStore = (props) => {
     return <div>Loading...</div>;
   }
 
-  const { address, name, neighbourhood } = props.coffeeStore;
+  const { address, name, neighbourhood, imgUrl } = props.coffeeStore;
 
   return (
-    <div>
+    <div className={styles.layout}>
       <Head>
         <title>{name}</title>
       </Head>
-      Coffee Page on {router.query.id}
-      <Link href="/">
-        <a>Back to Home</a>
-      </Link>
-      <p>{address}</p>
-      <p>{name}</p>
-      <p>{neighbourhood}</p>
+      <div className={styles.container}>
+        <div className={styles.col1}>
+          <div className={styles.backToHomeLink}>
+            <Link href="/">
+              <a>Back to Home</a>
+            </Link>
+          </div>
+          <div className={styles.nameWrapper}>
+            <h1>{name}</h1>
+          </div>
+          <Image
+            src={imgUrl}
+            width={600}
+            height={360}
+            className={styles.storeImg}
+            alt={name}
+          />
+        </div>
+        {/* Col 2 */}
+        <div className={cls("glass", styles.col2)}>
+          <div className={styles.iconWrapper}>
+            <Image
+              src="/static/icons/places.svg"
+              width={24}
+              height={24}
+              alt="Icon"
+            />
+            <p className={styles.text}>{address}</p>
+          </div>
+          <div className={styles.iconWrapper}>
+            <Image
+              src="/static/icons/nearMe.svg"
+              width={24}
+              height={24}
+              alt="Icon"
+            />
+            <p className={styles.text}>{neighbourhood}</p>
+          </div>
+          <div className={styles.iconWrapper}>
+            <Image
+              src="/static/icons/star.svg"
+              width={24}
+              height={24}
+              alt="Icon"
+            />
+            <p className={styles.text}>{1}</p>
+          </div>
+          <button className={styles.upvoteButton} onClick={handleUpvoteButton}>
+            Upvote
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+# Style props
 https://meshgradient.com/
 
 https://icones8.fr/
@@ -5,3 +6,9 @@ https://icones8.fr/
 glassmorphism.com
 
 https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout
+
+# Github : 
+https://github.com/samedan/2201_nextjs_coffee
+
+# Github Course Udemy
+https://github.com/kulkarniankita/discover-coffee-stores
