@@ -3,8 +3,17 @@ import Image from "next/image";
 import Banner from "../components/banner";
 import Card from "../components/card";
 import styles from "../styles/Home.module.css";
+import coffeeStoresData from "../data/coffee-stores.json";
 
-export default function Home() {
+export async function getStaticProps(context) {
+  // Fetch data
+  return {
+    props: { coffeeStores: coffeeStoresData },
+  }; // will be passed to the page as props
+}
+
+export default function Home(props) {
+  console.log(props);
   const handleOnBannerBtnClick = () => {
     console.log("Clicked");
   };
@@ -28,26 +37,25 @@ export default function Home() {
             width={700}
             height={400}
           />
-          <div className={styles.cardLayout}>
-            <Card
-              name="DarkHouse Coffee"
-              imgUrl="/static/hero-image.png"
-              href="/coffee-store/darkhouse-coffee"
-              className={styles.card}
-            />
-            <Card
-              name="DarkHouse Coffee"
-              imgUrl="/static/hero-image.png"
-              href="/coffee-store/darkhouse-coffee"
-              className={styles.card}
-            />
-            <Card
-              name="DarkHouse Coffee"
-              imgUrl="/static/hero-image.png"
-              href="/coffee-store/darkhouse-coffee"
-              className={styles.card}
-            />
-          </div>
+          {props.coffeeStores.length > 0 && (
+            <>
+              <h2 className={styles.heading2}>Toronto stores</h2>
+              <div className={styles.cardLayout}>
+                {/* CArds */}
+                {props.coffeeStores.map((coffeeStore) => {
+                  return (
+                    <Card
+                      key={coffeeStore.name}
+                      name={coffeeStore.name}
+                      imgUrl={coffeeStore.imgUrl}
+                      href={`/coffee-store/${coffeeStore.id}`}
+                      className={styles.card}
+                    />
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
       </main>
 
