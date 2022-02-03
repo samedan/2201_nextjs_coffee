@@ -12,3 +12,7 @@ https://github.com/samedan/2201_nextjs_coffee
 
 # Github Course Udemy
 https://github.com/kulkarniankita/discover-coffee-stores
+
+#Fourquare
+https://developer.foursquare.com/docs/places-api-getting-started
+
