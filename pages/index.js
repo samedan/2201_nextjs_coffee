@@ -7,7 +7,7 @@ import { fetchCoffeeStores } from "./../lib/coffee-store";
 
 export async function getStaticProps(context) {
   const coffeeStores = await fetchCoffeeStores();
-  console.log(coffeeStores);
+  // console.log(coffeeStores);
 
   // Fetch data
   return {
@@ -16,7 +16,7 @@ export async function getStaticProps(context) {
 }
 
 export default function Home(props) {
-  console.log(props);
+  // console.log(props);
   const handleOnBannerBtnClick = () => {
     console.log("Clicked");
   };
@@ -40,13 +40,13 @@ export default function Home(props) {
             width={700}
             height={400}
           />
-          {console.log(props.coffeeStores.results.length)}
-          {props.coffeeStores.results.length > 0 && (
+          {console.log(props.coffeeStores.length)}
+          {props.coffeeStores.length > 0 && (
             <>
               <h2 className={styles.heading2}>Toronto stores</h2>
               <div className={styles.cardLayout}>
                 {/* CArds */}
-                {props.coffeeStores.results.map((coffeeStore) => {
+                {props.coffeeStores.map((coffeeStore) => {
                   return (
                     <Card
                       key={coffeeStore.name}
