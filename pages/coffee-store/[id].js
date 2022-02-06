@@ -57,7 +57,12 @@ const CoffeeStore = (props) => {
         <div className={styles.col1}>
           <div className={styles.backToHomeLink}>
             <Link href="/">
-              <a style={{ textDecoration: "underline" }}>← Back to Home</a>
+              <a>
+                ←{" "}
+                <span style={{ textDecoration: "underline" }}>
+                  Back to Home
+                </span>
+              </a>
             </Link>
           </div>
           <div className={styles.nameWrapper}>
