@@ -2,14 +2,14 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import coffeeStoreData from "../../data/coffee-stores.json";
+// import coffeeStoreData from "../../data/coffee-stores.json";
 import styles from "../../styles/coffee-store.module.css";
 import cls from "classnames";
 import { fetchCoffeeStores } from "./../../lib/coffee-store";
 
 export async function getStaticProps(staticProps) {
   const params = staticProps.params;
-
+  console.log(staticProps);
   const coffeeStores = await fetchCoffeeStores();
   return {
     props: {
@@ -57,7 +57,7 @@ const CoffeeStore = (props) => {
         <div className={styles.col1}>
           <div className={styles.backToHomeLink}>
             <Link href="/">
-              <a>Back to Home</a>
+              <a style={{ textDecoration: "underline" }}>← Back to Home</a>
             </Link>
           </div>
           <div className={styles.nameWrapper}>
