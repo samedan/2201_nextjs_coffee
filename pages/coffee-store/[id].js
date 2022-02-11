@@ -5,24 +5,25 @@ import { useRouter } from "next/router";
 // import coffeeStoreData from "../../data/coffee-stores.json";
 import styles from "../../styles/coffee-store.module.css";
 import cls from "classnames";
-import { fetchCoffeeStores } from "./../../lib/coffee-store";
+import { fetchCoffeeStores } from "./../../lib/coffee-stores";
 
 export async function getStaticProps(staticProps) {
   const params = staticProps.params;
-  console.log(staticProps);
+
   const coffeeStores = await fetchCoffeeStores();
+  const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+    return coffeeStore.fsq_id.toString() === params.id; //dynamic [id]
+  });
   return {
     props: {
-      coffeeStore: coffeeStores.find((coffeeStore) => {
-        return coffeeStore.fsq_id.toString() === params.id; //dynamic [id]
-      }),
+      coffeeStore: findCoffeeStoreById ? findCoffeeStoreById : {},
     },
   };
 }
 
 export async function getStaticPaths() {
   const coffeeStores = await fetchCoffeeStores();
-  // console.log(coffeeStores);
+  console.log(coffeeStores);
   const paths = coffeeStores.map((coffeeStore) => {
     return {
       params: { id: coffeeStore.fsq_id.toString() },
@@ -31,6 +32,7 @@ export async function getStaticPaths() {
   return {
     // paths: [{ params: { id: "0" } }, { params: { id: "1" } }],
     paths,
+    // no 404 page
     fallback: true,
   };
 }

@@ -1,11 +1,11 @@
 import Head from "next/head";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Banner from "../components/banner";
 import Card from "../components/card";
 import useTrackLocation from "../hooks/use-track-location";
 import styles from "../styles/Home.module.css";
-import { fetchCoffeeStores } from "./../lib/coffee-store";
+import { fetchCoffeeStores } from "../lib/coffee-stores";
 
 export async function getStaticProps(context) {
   const coffeeStores = await fetchCoffeeStores();
@@ -22,16 +22,30 @@ export default function Home(props) {
 
   const { handleTrackLocation, latLong, locationErrorMsg, isFindingLocation } =
     useTrackLocation();
+  const [coffeeStores, setCoffeeStores] = useState("");
+  const [coffeeStoresError, setCoffeeStoresError] = useState(null);
 
-  useEffect(async () => {
+  useEffect(() => {
+    // async function fetchData() {
+    //   // You can await here
+    //   const response = await MyAPI.getData(someId);
+    //   // ...
+    // }
+    // fetchData();
+
     if (latLong) {
       try {
-        const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
-        console.log({ fetchedCoffeeStores });
-        // set coffee stores
+        async function fetchData() {
+          const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
+          console.log({ fetchedCoffeeStores });
+          // set coffee stores
+          setCoffeeStores(fetchedCoffeeStores);
+        }
+        fetchData();
       } catch (error) {
         // set error
         console.log({ error });
+        setCoffeeStoresError(error.message);
       }
     }
   }, [latLong]);
@@ -54,6 +68,7 @@ export default function Home(props) {
           handleOnClick={handleOnBannerBtnClick}
         />
         {locationErrorMsg && <p>Something went wrong: {locationErrorMsg}</p>}
+        {coffeeStoresError && <p>Something went wrong: {coffeeStoresError}</p>}
 
         <div className={styles.heroImage}>
           <Image
@@ -70,6 +85,30 @@ export default function Home(props) {
                 <div className={styles.cardLayout}>
                   {/* CArds */}
                   {props.coffeeStores.map((coffeeStore) => {
+                    return (
+                      <Card
+                        key={coffeeStore.fsq_id}
+                        name={coffeeStore.name}
+                        imgUrl={
+                          coffeeStore.imgUrl ||
+                          "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+                        }
+                        href={`/coffee-store/${coffeeStore.fsq_id}`}
+                        className={styles.card}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+          {coffeeStores.length > 0 && (
+            <>
+              <div className={styles.sectionWrapper}>
+                <h2 className={styles.heading2}>Stores near me</h2>
+                <div className={styles.cardLayout}>
+                  {/* CArds */}
+                  {coffeeStores.map((coffeeStore) => {
                     return (
                       <Card
                         key={coffeeStore.fsq_id}
