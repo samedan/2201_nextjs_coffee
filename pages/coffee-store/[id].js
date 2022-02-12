@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import styles from "../../styles/coffee-store.module.css";
 import cls from "classnames";
 import { fetchCoffeeStores } from "./../../lib/coffee-stores";
-import { StoreContext } from "../_app";
+import { StoreContext } from "../../store/store-context";
 import { useContext, useState, useEffect } from "react";
 import { isEmpty } from "../../utils";
 
