@@ -43,10 +43,6 @@ export async function getStaticPaths() {
   };
 }
 
-const handleUpvoteButton = () => {
-  console.log("upvoted");
-};
-
 const CoffeeStore = (initialProps) => {
   const router = useRouter();
 
@@ -61,6 +57,14 @@ const CoffeeStore = (initialProps) => {
   const {
     state: { coffeeStores },
   } = useContext(StoreContext);
+
+  const [votingCount, setVotingCount] = useState(1);
+
+  const handleUpvoteButton = () => {
+    console.log("upvoted");
+    let count = votingCount + 1;
+    setVotingCount(count);
+  };
 
   const handleCreateCoffeeStore = async (coffeeStore) => {
     try {
@@ -118,7 +122,7 @@ const CoffeeStore = (initialProps) => {
         }
       }
     } else {
-      // SSG
+      // SSR - Server Side Rendering
       // the Stores loaded as default (without searching)
       handleCreateCoffeeStore(initialProps.coffeeStore);
     }
@@ -191,7 +195,7 @@ const CoffeeStore = (initialProps) => {
                 height={24}
                 alt="Icon"
               />
-              <p className={styles.text}>{1}</p>
+              <p className={styles.text}>{votingCount}</p>
             </div>
             <button
               className={styles.upvoteButton}
