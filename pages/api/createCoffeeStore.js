@@ -1,58 +1,51 @@
-var Airtable = require("airtable");
-const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
-  process.env.AIRTABLE_BASE_KEY
-);
-
-const table = base("coffee-stores");
-
-console.log({ table });
+import { table, getMinifiedRecords } from "../../lib/airtable";
 
 const createCoffeStore = async (req, res) => {
-  console.log({ req });
-
   if (req.method === "POST") {
+    const { id, name, neighbourhood, address, imgUrl, voting } = req.body;
     try {
-      // find a record and NORMALIZE
-      const findCoffeeStoreRecords = await table
-        .select({
-          filterByFormula: `id="3"`,
-        })
-        .firstPage();
+      if (id) {
+        // find a record and NORMALIZE
+        const findCoffeeStoreRecords = await table
+          .select({
+            filterByFormula: `id="${id}"`,
+          })
+          .firstPage();
 
-      if (findCoffeeStoreRecords.length !== 0) {
-        console.log("found store");
-        const records = findCoffeeStoreRecords.map((record) => {
-          return {
-            ...record.fields,
-          };
-        });
-        res.json(records);
+        if (findCoffeeStoreRecords.length !== 0) {
+          const records = getMinifiedRecords(findCoffeeStoreRecords);
+          res.json(records);
+        } else {
+          // create a record
+          if (name) {
+            const createRecords = await table.create([
+              {
+                fields: {
+                  id,
+                  name,
+                  address,
+                  neighbourhood,
+                  voting,
+                  imgUrl,
+                },
+              },
+            ]);
+
+            const records = getMinifiedRecords(createRecords);
+            res.json(records);
+          } else {
+            res.status(400);
+            res.json({ message: "Id or Name is missing" });
+          }
+        }
       } else {
-        // create a record
-        const createRecords = await table.create([
-          {
-            fields: {
-              id: "1",
-              name: "My favourite coffee store",
-              address: "Conflans",
-              neighbourhood: "some y place",
-              voting: 200,
-              imgUrl: "http://myimage.com",
-            },
-          },
-        ]);
-
-        const records = createRecords.map((record) => {
-          return {
-            ...record.fields,
-          };
-        });
-        res.json(records);
+        res.status(400);
+        res.json({ message: "ID is missing" });
       }
     } catch (error) {
-      console.error("Error finding store", error);
+      console.error("Error creating or finding store", error);
       res.status(500);
-      res.json({ message: "Error finding store", error });
+      res.json({ message: "Error creating or finding store", error });
     }
   }
 };
