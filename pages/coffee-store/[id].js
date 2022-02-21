@@ -28,9 +28,8 @@ export async function getStaticProps(staticProps) {
 }
 
 export async function getStaticPaths() {
-  console.log("STep getStaticPaths");
   const coffeeStores = await fetchCoffeeStores();
-  // console.log(coffeeStores);
+
   const paths = coffeeStores.map((coffeeStore) => {
     return {
       params: { id: coffeeStore.fsq_id.toString() },
@@ -46,33 +45,46 @@ export async function getStaticPaths() {
 
 const CoffeeStore = (initialProps) => {
   const router = useRouter();
-
   const fsq_id = router.query.id;
-  console.log({ fsq_id });
-
-  // get props from intialProps and the found ones
-
-  // console.log({ coffeeStore });
 
   const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
   const {
     state: { coffeeStores },
   } = useContext(StoreContext);
 
-  const [votingCount, setVotingCount] = useState(1);
+  const [votingCount, setVotingCount] = useState(0);
 
-  const handleUpvoteButton = () => {
-    console.log("upvoted");
-    let count = votingCount + 1;
-    setVotingCount(count);
+  const handleUpvoteButton = async () => {
+    try {
+      const response = await fetch("/api/favouriteCoffeeStoreById", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: `${fsq_id}`,
+        }),
+      });
+      const dbCoffeeStore = await response.json();
+      if (dbCoffeeStore && dbCoffeeStore.length > 0) {
+        let count = votingCount + 1;
+        setVotingCount(count);
+      }
+    } catch (error) {
+      console.error("Error upvoting", error);
+    }
   };
 
   const handleCreateCoffeeStore = async (coffeeStore) => {
     try {
-      console.log("coffeeStore");
-      console.log(coffeeStore);
       const { fsq_id, name, voting, location, imgUrl, neighborhood, address } =
         coffeeStore;
+      const vecinanate = "";
+      if (neighborhood) {
+        vecinanate = neighborhood[0];
+      } else {
+        vecinanate = location.locality;
+      }
       const response = await fetch("/api/createCoffeeStore", {
         method: "POST",
         headers: {
@@ -83,13 +95,13 @@ const CoffeeStore = (initialProps) => {
           name,
           voting: 0,
           imgUrl,
-          neighbourhood: neighborhood || "",
+          neighbourhood: vecinanate,
           address: location.formatted_address || "",
         }),
       });
       const dbCoffeeStore = await response.json();
-      console.log("dbCoffeeStore");
-      console.log(dbCoffeeStore);
+      // console.log("dbCoffeeStore");
+      // console.log(dbCoffeeStore);
     } catch (error) {
       console.error("Error creating coffee store", error);
     }
@@ -101,23 +113,11 @@ const CoffeeStore = (initialProps) => {
     // console.log(initialProps.coffeeStore);
     if (isEmpty(initialProps.coffeeStore)) {
       if (coffeeStores.length > 0) {
-        console.log("true, more stores found");
         const coffeeStoreFromContext = coffeeStores.find((coffeeStore) => {
-          // if (coffeeStore.fsq_id.toString() === fsq_id) {
-          //   console.log("found fsq_id", fsq_id);
-          //   console.log("coffee store 97", coffeeStore);
-          // }
-
           return coffeeStore.fsq_id.toString() === fsq_id; //dynamic [id]
         });
 
-        // return {
-        //   props: {
-        //     coffeeStore: coffeeStoreFromContext ? coffeeStoreFromContext : {},
-        //   },
-        // };
         if (coffeeStoreFromContext) {
-          // console.log(coffeeStoreFromContext);
           setCoffeeStore(coffeeStoreFromContext);
           handleCreateCoffeeStore(coffeeStoreFromContext);
         }
@@ -131,13 +131,11 @@ const CoffeeStore = (initialProps) => {
 
   // SWR
   const { data, error } = useSwr(`/api/getCoffeeStoreById?id=${fsq_id}`);
-  console.log({ data });
+  // console.log({ data });
 
   useEffect(() => {
     if (data && data.length > 0) {
-      console.log("data from SWR");
       setCoffeeStore(data[0]);
-
       setVotingCount(data[0].voting);
     }
   }, [data]);

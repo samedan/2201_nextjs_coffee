@@ -89,7 +89,7 @@ export default function Home(props) {
             width={700}
             height={400}
           />
-          {console.log(props.coffeeStores.length)}
+          {/* {console.log(props.coffeeStores.length)} */}
           {props.coffeeStores.length > 0 && (
             <>
               <div className={styles.sectionWrapper}>
