@@ -6,6 +6,7 @@ import {
 
 const getCoffeeStoreById = async (req, res) => {
   const { id } = req.query;
+  console.log({ id });
 
   try {
     if (id) {

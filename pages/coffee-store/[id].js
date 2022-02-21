@@ -9,6 +9,7 @@ import { fetchCoffeeStores } from "./../../lib/coffee-stores";
 import { StoreContext } from "../../store/store-context";
 import { useContext, useState, useEffect } from "react";
 import { isEmpty } from "../../utils";
+import useSwr from "swr";
 
 export async function getStaticProps(staticProps) {
   const params = staticProps.params;
@@ -128,6 +129,23 @@ const CoffeeStore = (initialProps) => {
     }
   }, [fsq_id, initialProps, initialProps.coffeeStore]);
 
+  // SWR
+  const { data, error } = useSwr(`/api/getCoffeeStoreById?id=${fsq_id}`);
+  console.log({ data });
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      console.log("data from SWR");
+      setCoffeeStore(data[0]);
+
+      setVotingCount(data[0].voting);
+    }
+  }, [data]);
+
+  if (error) {
+    return <div>Smth went wrong retrievineg coffee store page</div>;
+  }
+
   if (router.isFallback === true) {
     return <div>Loading...</div>;
   }
@@ -174,7 +192,7 @@ const CoffeeStore = (initialProps) => {
                 height={24}
                 alt="Icon"
               />
-              <p className={styles.text}>{location?.address}</p>
+              <p className={styles.text}>{location?.address || address}</p>
             </div>
             {location?.neighborhood && (
               <div className={styles.iconWrapper}>
